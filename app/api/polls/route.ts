@@ -1,10 +1,24 @@
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
+
+type PollOptionRow = {
+  id: string;
+  poll_id: string;
+  label: string;
+  created_at: string;
+};
+
+type PollVoteRow = {
+  id: string;
+  poll_id: string;
+  poll_option_id: string;
+  voter_id: string;
+};
 
 export async function GET() {
   try {
     // Get all polls
     const { data: polls, error: pollsError } =
-      await supabase
+      await getSupabase()
         .from("polls")
         .select("id, question, multiple, created_at")
         .order("created_at", {
@@ -29,11 +43,11 @@ export async function GET() {
       (poll) => poll.id
     );
 
-    let options: any[] = [];
+    let options: PollOptionRow[] = [];
 
     if (pollIds.length > 0) {
       const { data: optionData, error: optionsError } =
-        await supabase
+        await getSupabase()
           .from("poll_options")
           .select(
             "id, poll_id, label, created_at"
@@ -59,15 +73,15 @@ export async function GET() {
         );
       }
 
-      options = optionData ?? [];
+      options = (optionData ?? []) as PollOptionRow[];
     }
 
     // Get votes for all polls
-    let votes: any[] = [];
+    let votes: PollVoteRow[] = [];
 
     if (pollIds.length > 0) {
       const { data: voteData, error: votesError } =
-        await supabase
+        await getSupabase()
           .from("poll_votes")
           .select(
             "id, poll_id, poll_option_id, voter_id"
@@ -90,7 +104,7 @@ export async function GET() {
         );
       }
 
-      votes = voteData ?? [];
+      votes = (voteData ?? []) as PollVoteRow[];
     }
 
     // Format the polls for the frontend

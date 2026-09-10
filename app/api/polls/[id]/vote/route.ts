@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 export async function POST(
   req: Request,
@@ -26,7 +26,7 @@ export async function POST(
 
     // Check that the question exists
     const { data: question, error: questionError } =
-      await supabase
+      await getSupabase()
         .from("questions")
         .select("id")
         .eq("id", id)
@@ -43,7 +43,7 @@ export async function POST(
 
     // Check whether this voter already voted
     const { data: existingVote, error: existingVoteError } =
-      await supabase
+      await getSupabase()
         .from("votes")
         .select("id")
         .eq("question_id", id)
@@ -73,7 +73,7 @@ export async function POST(
 
     // Insert the vote
     const { data: vote, error: insertError } =
-      await supabase
+      await getSupabase()
         .from("votes")
         .insert({
           question_id: id,

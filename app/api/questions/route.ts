@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { getQuestionsPage, searchQuestions } from "@/lib/questions";
 
 const PAGE_SIZE = 10;
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 
     const cleanBody = body.trim();
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("questions")
       .insert({
         body: cleanBody,

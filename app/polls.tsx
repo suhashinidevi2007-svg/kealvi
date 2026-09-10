@@ -58,7 +58,11 @@ export default function Polls() {
   // Load polls when component starts
   // --------------------------------------------------
   useEffect(() => {
-    loadPolls();
+    const timer = window.setTimeout(() => {
+      void loadPolls();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   // --------------------------------------------------

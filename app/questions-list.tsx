@@ -33,22 +33,12 @@ export default function QuestionsList({
 
   const [error, setError] = useState("");
 
-  const [hydrated, setHydrated] = useState(false);
-
   const [aiAnswer, setAiAnswer] = useState("");
   const [answeredQuestion, setAnsweredQuestion] =
     useState("");
 
   const [votedQuestions, setVotedQuestions] =
     useState<Record<string, boolean>>({});
-
-  // --------------------------------------------------
-  // Hydration
-  // --------------------------------------------------
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
 
   // --------------------------------------------------
   // Search questions
@@ -496,9 +486,7 @@ export default function QuestionsList({
         />
 
         <span className="shrink-0 text-xs text-muted">
-          {hydrated
-            ? "Interactive ✓"
-            : "Loading interactivity..."}
+          Interactive
         </span>
 
       </div>
