@@ -6,9 +6,10 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const { voterId } = await req.json();
+    const body = await req.json();
 
-    // Validate question ID
+    const voterId = body?.voterId;
+
     if (!id) {
       return Response.json(
         { error: "Question ID is required." },
@@ -16,7 +17,6 @@ export async function POST(
       );
     }
 
-    // Validate voter ID
     if (!voterId) {
       return Response.json(
         { error: "Voter ID is required." },
@@ -24,7 +24,7 @@ export async function POST(
       );
     }
 
-    // Check if question exists
+    // Check that the question exists
     const { data: question, error: questionError } =
       await supabase
         .from("questions")
@@ -41,7 +41,7 @@ export async function POST(
       );
     }
 
-    // Check if this voter already voted
+    // Check whether this voter already voted
     const { data: existingVote, error: existingVoteError } =
       await supabase
         .from("votes")
@@ -62,7 +62,6 @@ export async function POST(
       );
     }
 
-    // Prevent duplicate vote
     if (existingVote) {
       return Response.json(
         {
@@ -72,7 +71,7 @@ export async function POST(
       );
     }
 
-    // Insert vote
+    // Insert the vote
     const { data: vote, error: insertError } =
       await supabase
         .from("votes")
@@ -87,6 +86,16 @@ export async function POST(
     if (insertError) {
       console.error("Vote insert error:", insertError);
 
+      if (insertError.code === "23505") {
+        return Response.json(
+          {
+            error:
+              "You have already upvoted this question.",
+          },
+          { status: 409 }
+        );
+      }
+
       return Response.json(
         {
           error: insertError.message,
@@ -97,7 +106,6 @@ export async function POST(
       );
     }
 
-    // Success
     return Response.json({
       ok: true,
       voteId: vote.id,
